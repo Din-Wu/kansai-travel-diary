@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f8f2e9">
+<title>關西旅行手帳｜8天7夜</title>
+<style>
+:root{--paper:#fffdf8;--cream:#f8f2e9;--ink:#514b45;--muted:#93887d;--pink:#e9b9b6;--pink2:#f7e5e1;--sage:#b9c8b1;--sage2:#e8eee4;--yellow:#f2d99b;--line:#eadfd2;--shadow:0 8px 24px rgba(91,73,57,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC",sans-serif;line-height:1.55}
+button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.app{max-width:760px;margin:0 auto;min-height:100vh;padding:18px 14px 48px}
+.top{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 14px}
+.brand{font-size:12px;letter-spacing:.18em;color:var(--muted)}.stamp{border:1px dashed #d9b6a8;border-radius:50%;width:48px;height:48px;display:grid;place-items:center;color:#b77e76;font-size:11px;transform:rotate(8deg);line-height:1.1;text-align:center}
+.hero{background:linear-gradient(135deg,#f4ded8,#f8ead7 55%,#e8eee4);border-radius:25px;padding:22px 20px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.hero:after{content:"✿";position:absolute;right:20px;top:10px;font-size:54px;color:#fff8;transform:rotate(15deg)}
+.hero h1{font-family:"Noto Serif TC",serif;font-size:27px;letter-spacing:.08em;margin:0 0 4px;font-weight:700}
+.hero p{margin:0;color:#796e64;font-size:13px}.hero .dates{margin-top:13px;display:inline-block;background:#fff9;border-radius:20px;padding:5px 11px;font-size:12px}
+.progress-wrap{margin:16px 3px 18px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}
+.progress{height:7px;border-radius:10px;background:#e8dfd4;flex:1;overflow:hidden}.progress>span{display:block;height:100%;width:0;background:var(--sage);border-radius:10px;transition:width .2s}
+.day-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;scrollbar-width:none}.day-strip::-webkit-scrollbar{display:none}
+.day-btn{flex:0 0 67px;border:1px solid var(--line);background:#fffaf4;border-radius:15px;padding:9px 4px;text-align:center;color:var(--muted);box-shadow:0 3px 8px #6d55400a}
+.day-btn b{display:block;font-size:17px;color:var(--ink)}.day-btn small{font-size:10px}.day-btn.active{background:var(--sage2);border-color:#b8c8b0;color:#63755e}.day-btn.active b{color:#52664d}
+.panel{background:var(--paper);border:1px solid #eee5da;border-radius:22px;padding:16px;margin-top:9px;box-shadow:var(--shadow)}
+.day-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.day-heading h2{font-size:20px;margin:0 0 3px;font-family:"Noto Serif TC",serif}.day-heading p{margin:0;color:var(--muted);font-size:12px}
+.tag{background:var(--pink2);color:#a36f68;border-radius:20px;padding:5px 9px;font-size:11px;white-space:nowrap}
+.cover{margin:14px 0 12px;position:relative}.cover img{width:100%;height:180px;object-fit:cover;border-radius:16px;display:block;background:#eee}.cover figcaption{font-size:10px;color:var(--muted);margin:5px 3px}
+.event{display:grid;grid-template-columns:54px 1fr 28px;gap:9px;padding:13px 0;border-top:1px dashed var(--line);align-items:start}
+.time{font-size:12px;color:#9a8070;font-weight:650;padding-top:2px}.event h3{margin:0;font-size:15px}.event p{margin:4px 0 0;font-size:12px;color:var(--muted);white-space:pre-wrap}
+.event.done h3,.event.done p{text-decoration:line-through;opacity:.5}.check{appearance:none;width:22px;height:22px;border:1.5px solid #c9d3c2;border-radius:7px;background:#fff;display:grid;place-items:center;margin:0}
+.check:checked{background:#aebfa6;border-color:#aebfa6}.check:checked:after{content:"✓";color:white;font-size:15px;font-weight:bold}
+.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.soft-btn{border:1px solid var(--line);background:#fffaf4;border-radius:18px;padding:8px 12px;font-size:12px}.soft-btn.primary{background:var(--sage2);border-color:#d3dfcc}
+.note{background:#fbf4e7;border-radius:14px;padding:12px;margin-top:14px;font-size:12px;color:#827463}.note b{display:block;margin-bottom:3px;color:#665b4e}
+.section-title{font-family:"Noto Serif TC",serif;font-size:17px;margin:0 0 10px}.checklist{display:grid;gap:9px}.packing{display:flex;align-items:center;gap:9px;font-size:13px}.packing input{accent-color:#9eaf96;width:17px;height:17px}
+textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fffefa;padding:10px;min-height:88px;resize:vertical;font-size:13px}
+.footer{text-align:center;color:#a99b8e;font-size:10px;padding:24px 0 0}
+.modal{position:fixed;inset:0;background:#342d2880;display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:5}.modal.show{display:flex}.sheet{width:min(100%,600px);background:var(--paper);border-radius:22px 22px 16px 16px;padding:18px;box-shadow:0 15px 50px #0003}.sheet h3{margin:0 0 12px}.field{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}.field input,.field textarea{margin-top:4px}.field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fffefa}.sheet-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+@media(min-width:650px){.app{padding-top:28px}.hero{padding:28px}.hero h1{font-size:32px}.cover img{height:250px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div><div class="brand">TRAVEL JOURNAL · JAPAN</div><div style="font-size:11px;color:var(--muted)">一頁一景，慢慢收藏旅途</div></div><div class="stamp">Kansai<br>2026</div></div>
+  <header class="hero"><h1>關西散步手帳</h1><p>京都・大阪・奈良・伊根｜把八天的風景收進回憶裡</p><span class="dates">2026.12.16 — 12.23　｜　8 DAYS 7 NIGHTS</span></header>
+  <div class="progress-wrap"><span id="progressText">旅程完成 0%</span><div class="progress"><span id="progressBar"></span></div><span id="doneCount">0/0</span></div>
+  <nav class="day-strip" id="dayStrip" aria-label="選擇日期"></nav>
+  <main id="main"></main>
+  <section class="panel">
+    <h2 class="section-title">🎒 出發前的小清單</h2>
+    <div class="checklist" id="packing"></div>
+  </section>
+  <section class="panel">
+    <h2 class="section-title">✎ 旅途備忘錄</h2>
+    <textarea id="memo" placeholder="想記下的餐廳、購物清單、臨時想到的事……"></textarea>
+    <div style="font-size:10px;color:var(--muted);margin-top:6px">內容會自動保存在目前裝置的瀏覽器。</div>
+  </section>
+  <div class="footer">made with ♡ for your Kansai days<br>景點照片需連接網路載入；行程編輯與勾選保存在本機瀏覽器。</div>
+</div>
+<div class="modal" id="modal">
+ <div class="sheet">
+  <h3 id="modalTitle">編輯行程</h3>
+  <label class="field">時間<input id="editTime" placeholder="09:00–10:00"></label>
+  <label class="field">行程名稱<input id="editTitle" placeholder="景點或活動"></label>
+  <label class="field">備註<textarea id="editNote" rows="3" placeholder="交通、提醒或想做的事"></textarea></label>
+  <div class="sheet-actions"><button class="soft-btn" id="cancelEdit">取消</button><button class="soft-btn primary" id="saveEdit">儲存</button></div>
+ </div>
+</div>
+<script>
+const days = [
+{date:"12/16",dow:"三",title:"抵達關西・前往京都",tag:"初見京都",summary:"KHH → KIX → 京都；傍晚散步祇園與鴨川",photo:"https://www.datocms-assets.com/101439/1697698742-nishiki-market.webp?auto=format&h=1000&w=2000",alt:"京都錦市場街景",events:[
+["09:00–13:10","高雄飛往關西機場","抵達 KIX，辦理入境、領取行李。"],
+["14:30–16:30","關西機場 → 京都","搭乘 JR Haruka 前往京都站；車程約 75–80 分鐘，另預留候車與入境時間。"],
+["16:30–17:30","飯店寄放行李／入住","京都站周邊飯店，稍作休息。"],
+["17:30–18:30","錦市場（視時間）","店家營業時間各異，週三部分店家休息；若太晚就直接前往祇園。"],
+["18:30–20:30","祇園・八坂神社・鴨川","傍晚散步、拍照，找晚餐。"]]},
+{date:"12/17",dow:"四",title:"伏見稻荷・宇治・任天堂博物館",tag:"鳥居與抹茶",summary:"上午伏見稻荷、宇治，下午依預約時段參觀任天堂博物館",photo:"https://www.celebritycruises.com/blog/content/uploads/2022/01/japan-landmarks-fushimi-inari-taisha-kyoto.jpg",alt:"伏見稻荷千本鳥居",events:[
+["07:30–09:30","伏見稻荷大社","建議早點抵達，避開人潮；依體力走到千本鳥居與中段觀景處。"],
+["10:00–13:00","宇治散策","宇治橋、表參道、抹茶甜點；平等院可視時間安排。"],
+["下午","任天堂博物館","必須依預約票券上的指定入場時段抵達；預留交通與排隊時間。"],
+["傍晚","返回京都市區","晚餐、自由活動。"]]},
+{date:"12/18",dow:"五",title:"下鴨神社・嵐山・金閣寺",tag:"京都經典",summary:"早上神社，白天嵐山，下午金閣寺與北野天滿宮",photo:"https://mediaim.expedia.com/destination/2/6f024abcd72a361f2ef55a471e0d51a6.jpg",alt:"嵐山竹林小徑",events:[
+["07:30–08:15","下鴨神社","清晨散步，感受糺之森。"],
+["09:00–12:15","嵐山竹林・渡月橋","竹林、渡月橋、商店街與午餐。"],
+["13:15–14:15","金閣寺","參觀金閣與庭園；交通時間請保留彈性。"],
+["14:45–15:45","北野天滿宮","若交通延誤，可縮短停留或視體力取捨。"],
+["16:15 以後","京都車站晚餐・整理行李","記得確認行李宅配至大阪飯店，指定 12/19 配達並先確認飯店收件。"]]},
+{date:"12/19",dow:"六",title:"天橋立・伊根一日遊",tag:"海邊慢旅行",summary:"京都集合出發，行程結束後直達大阪",photo:"https://www.club-t.com/ct/kanko/guide/kokunai/info/k_261/k_261_017_02.jpg",alt:"天橋立海景",events:[
+["早上","京都站集合・出發","集合時間、地點以實際購買的行程憑證為準。"],
+["上午–中午","天橋立","散步、展望景色；停留時間依旅行團安排。"],
+["下午","伊根舟屋・遊覽船","確認遊覽船是否包含在團費、當日船班及天候安排。"],
+["傍晚","行程結束後前往大阪","確認是否有大阪下車點；大型行李政策以旅行社回覆為準。"],
+["晚上","大阪飯店入住","若大件行李已宅配抵達，確認櫃檯領取。"]]},
+{date:"12/20",dow:"日",title:"奈良春日大社・釜飯・天王寺",tag:"古都散策",summary:"不排東大寺，保留時間給春日大社、志津香與新世界",photo:"https://www.japan.travel/content/dam/japan-travel/spot/2131/2131_1.jpg",alt:"春日大社參道",events:[
+["07:30–09:00","大阪 → 奈良","搭乘近鐵或 JR 前往奈良，依飯店位置選擇。"],
+["09:00–10:30","春日大社","以參拜與參道散步為主；冬季一般參拜時間較短，留意特別區域開放限制。"],
+["10:30–11:00","步行前往志津香公園店","建議提早抵達排隊，假日候位可能較久。"],
+["11:00–12:30","志津香釜飯","營業及公休日可能調整，出發前再次確認 2026/12/20 是否營業。"],
+["12:30–13:30","返回大阪","回大阪市區。"],
+["13:30–17:00","天王寺・阿倍野","逛街、休息；Harukas 300 可依天氣與體力加選。"],
+["17:30–19:30","通天閣・新世界","感受大阪夜景與街區氣氛，安排晚餐。"]]},
+{date:"12/21",dow:"一",title:"木津市場・梅田購物",tag:"市場早餐日",summary:"早上吃海鮮與逛市場，下午梅田百貨與空中庭園",photo:"https://www.datocms-assets.com/101439/1697698742-nishiki-market.webp?auto=format&h=1000&w=2000",alt:"日本市場街景",events:[
+["07:45–08:00","前往木津市場","確認當天想吃的店家營業時間。"],
+["08:00–09:45","木津市場早餐","海鮮、熟食與市場散策；各店營業時間不同。"],
+["09:45–10:30","前往梅田","搭乘地鐵前往梅田一帶。"],
+["10:30–12:30","阪急百貨・Grand Front Osaka","逛街、選購伴手禮。"],
+["12:30–13:30","午餐","梅田周邊用餐。"],
+["13:30–15:30","LUCUA・HEP FIVE 等","依購物需求彈性調整。"],
+["日落前後","梅田藍天大廈空中庭園","預留交通與入場時間，欣賞冬日日落與夜景。"]]},
+{date:"12/22",dow:"二",title:"勝尾寺・中之島光之文藝復興",tag:"達摩與燈光",summary:"白天勝尾寺，晚上中之島冬季燈飾",photo:"https://ccn-j.net/osaka/img/osaka01.jpg",alt:"大阪中之島夜景",events:[
+["07:30–09:00","大阪 → 勝尾寺","搭地鐵至箕面萱野，再轉乘巴士；請先查當日班次。"],
+["09:00–11:45","勝尾寺","欣賞達摩與寺院景色，留意冬季氣溫與步行路面。"],
+["12:00–13:00","返回大阪市區","依巴士班次預留候車時間。"],
+["13:00–16:00","午餐・休息・自由活動","可回飯店休息，晚上再出發。"],
+["16:30–17:00","前往中之島","建議提早抵達，依當年官方活動動線步行。"],
+["17:00–19:30","OSAKA 光之文藝復興","欣賞市役所周邊、中之島中央公會堂與河岸燈飾；2026 實際節目與亮燈時間以官方公告為準。"]]},
+{date:"12/23",dow:"三",title:"難波・心齋橋・道頓堀返程",tag:"最後採買",summary:"大阪市區自由逛街，傍晚前往關西機場",photo:"https://upd-api.funtime.com.tw/uploads/_568219c0b2.jpeg",alt:"大阪冬季燈飾",events:[
+["08:00–09:00","早餐・退房準備","木津市場 12/23 為休市日，不安排市場行程。行李先寄放飯店。"],
+["09:00–10:00","難波八阪神社","參拜獅子殿，拍照留念。"],
+["10:00–12:00","心齋橋筋商店街","購物、藥妝與伴手禮。"],
+["12:00–13:30","午餐","心齋橋或道頓堀周邊。"],
+["13:30–15:30","道頓堀・戎橋","拍照、最後採買與散步。"],
+["15:30–16:15","返回飯店取行李","確認護照、機票、行李與免稅品。"],
+["16:30–17:45","難波 → 關西機場","搭乘南海電鐵；建議預留交通與機場報到緩衝。"],
+["20:20–22:55","KIX 飛回高雄","回程航班。"]]}
+];
+const packingItems=["護照、機票與訂房資料","日圓現金、信用卡、交通卡","手機、充電器、行動電源","轉接插頭與充電線","保暖外套、圍巾、手套","舒適好走的鞋與襪子","常備藥、個人用品","行李秤、購物袋、雨具"];
+let selected=0, editIndex=null;
+const $=id=>document.getElementById(id);
+const storageKey="kansai_journal_2026_v1";
+let saved={};
+try{saved=JSON.parse(localStorage.getItem(storageKey)||"{}")}catch(e){saved={}}
+function persist(){localStorage.setItem(storageKey,JSON.stringify(saved))}
+function dayEvents(i){return saved.days?.[i]||days[i].events.map((e,j)=>({time:e[0],title:e[1],note:e[2],id:i+"-"+j}))}
+function setDayEvents(i,arr){saved.days=saved.days||{};saved.days[i]=arr;persist()}
+function render(){
+ $("dayStrip").innerHTML=days.map((d,i)=>`<button class="day-btn ${i===selected?"active":""}" data-day="${i}"><small>DAY ${i+1}</small><b>${d.date}</b><small>週${d.dow}</small></button>`).join("");
+ document.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{selected=+b.dataset.day;render()});
+ const d=days[selected], ev=dayEvents(selected), checks=saved.checks||{};
+ const total=days.reduce((n,_,i)=>n+dayEvents(i).length,0),done=Object.values(checks).filter(Boolean).length;
+ const doneSafe=Math.min(done,total),pct=total?Math.round(doneSafe/total*100):0;
+ $("progressText").textContent=`旅程完成 ${pct}%`; $("progressBar").style.width=pct+"%"; $("doneCount").textContent=`${doneSafe}/${total}`;
+ $("main").innerHTML=`<section class="panel">
+ <div class="day-heading"><div><h2>${d.title}</h2><p>${d.date}（週${d.dow}）・${d.summary}</p></div><span class="tag">${d.tag}</span></div>
+ <figure class="cover"><img src="${d.photo}" alt="${d.alt}" loading="lazy" onerror="this.style.display='none'"><figcaption>今日風景｜${d.alt}（照片需連線載入）</figcaption></figure>
+ <div id="events">${ev.map((e,j)=>{let key=e.id||selected+"-"+j;return `<article class="event ${checks[key]?"done":""}"><div class="time">${escapeHtml(e.time)}</div><div><h3>${escapeHtml(e.title)}</h3><p>${escapeHtml(e.note)}</p><div class="actions"><button class="soft-btn" data-edit="${j}">編輯</button><button class="soft-btn" data-delete="${j}">刪除</button><a class="soft-btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title+" "+d.title+" Japan")}">地圖</a></div></div><input class="check" type="checkbox" aria-label="完成 ${escapeHtml(e.title)}" data-check="${key}" ${checks[key]?"checked":""}></article>`}).join("")}</div>
+ <div class="actions"><button class="soft-btn primary" id="addEvent">＋ 新增行程</button><button class="soft-btn" id="resetDay">還原本日原始行程</button></div>
+ <div class="note"><b>♡ 今日提醒</b>${d.date==="12/19"?"行李宅配與一日遊行李規定請先向飯店、旅行社確認。":d.date==="12/17"?"任天堂博物館需持指定日期與時段的預約票入場。":d.date==="12/23"?"木津市場休市；請預留前往機場與報到時間。":"交通與店家營業時間可能調整，出發前請再確認官方公告。"}</div>
+ </section>`;
+ document.querySelectorAll("[data-check]").forEach(c=>c.onchange=()=>{saved.checks=saved.checks||{};saved.checks[c.dataset.check]=c.checked;persist();render()});
+ document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(+b.dataset.edit));
+ document.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{if(confirm("確定刪除這個行程？")){let a=dayEvents(selected);a.splice(+b.dataset.delete,1);setDayEvents(selected,a);render()}});
+ $("addEvent").onclick=()=>openEditor(null);$("resetDay").onclick=()=>{if(confirm("還原本日原始行程？本日自訂內容將被覆蓋。")){saved.days?.[selected]&&delete saved.days[selected];persist();render()}};
+}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function openEditor(index){editIndex=index;const e=index===null?{time:"",title:"",note:""}:dayEvents(selected)[index];$("modalTitle").textContent=index===null?"新增行程":"編輯行程";$("editTime").value=e.time;$("editTitle").value=e.title;$("editNote").value=e.note;$("modal").classList.add("show")}
+$("cancelEdit").onclick=()=>$("modal").classList.remove("show");
+$("saveEdit").onclick=()=>{let a=dayEvents(selected),item={time:$("editTime").value.trim(),title:$("editTitle").value.trim(),note:$("editNote").value.trim(),id:editIndex===null?"custom-"+Date.now():a[editIndex].id||selected+"-"+editIndex};if(!item.title){alert("請填寫行程名稱");return}if(editIndex===null)a.push(item);else a[editIndex]=item;setDayEvents(selected,a);$("modal").classList.remove("show");render()};
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))$("modal").classList.remove("show")});
+function renderPacking(){const p=saved.packing||{};$("packing").innerHTML=packingItems.map((x,i)=>`<label class="packing"><input type="checkbox" data-pack="${i}" ${p[i]?"checked":""}>${x}</label>`).join("");document.querySelectorAll("[data-pack]").forEach(c=>c.onchange=()=>{saved.packing=saved.packing||{};saved.packing[c.dataset.pack]=c.checked;persist()})}
+$("memo").value=saved.memo||"";$("memo").addEventListener("input",e=>{saved.memo=e.target.value;persist()});
+render();renderPacking();
+</script>
+</body>
+</html>
