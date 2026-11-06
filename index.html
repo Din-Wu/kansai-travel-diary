@@ -42,7 +42,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#
 <div class="app">
   <div class="top"><div><div class="brand">TRAVEL JOURNAL · JAPAN</div><div style="font-size:11px;color:var(--muted)">一頁一景，慢慢收藏旅途</div></div><div class="stamp">Kansai<br>2026</div></div>
   <header class="hero"><h1>關西散步手帳</h1><p>京都・大阪・奈良・伊根｜把八天的風景收進回憶裡</p><span class="dates">2026.12.16 — 12.23　｜　8 DAYS 7 NIGHTS</span></header>
-  <div class="progress-wrap"><span id="progressText">旅程完成 0%</span><div class="progress"><span id="progressBar"></span></div><span id="doneCount">0/0</span></div>
+  <section class="panel" id="cloudPanel"><b id="cloudStatus">☁️ 正在連接共享行程…</b><div id="cloudHint" style="font-size:11px;color:var(--muted)">同行者可瀏覽；只有管理者能編輯。</div><form id="loginForm" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px"><input id="loginEmail" type="email" placeholder="管理者 Email" required><input id="loginPassword" type="password" placeholder="密碼" required><button class="soft-btn primary" type="submit">管理者登入</button></form><button class="soft-btn" id="logoutBtn" style="display:none">登出管理者</button><div id="loginMessage"></div></section><div class="progress-wrap"><span id="progressText">旅程完成 0%</span><div class="progress"><span id="progressBar"></span></div><span id="doneCount">0/0</span></div>
   <nav class="day-strip" id="dayStrip" aria-label="選擇日期"></nav>
   <main id="main"></main>
   <section class="panel">
@@ -65,7 +65,12 @@ textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#
   <div class="sheet-actions"><button class="soft-btn" id="cancelEdit">取消</button><button class="soft-btn primary" id="saveEdit">儲存</button></div>
  </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL="https://mjielrjgbhgwhumsgxyi.supabase.co";
+const SUPABASE_KEY="sb_publishable_7Dyr3wPoAXCun3ygffSjhQ_9KpVmPMb";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let isOwner=false, cloudReady=false;
 const days = [
 {date:"12/16",dow:"三",title:"抵達關西・前往京都",tag:"初見京都",summary:"KHH → KIX → 京都；傍晚散步祇園與鴨川",photo:"https://www.datocms-assets.com/101439/1697698742-nishiki-market.webp?auto=format&h=1000&w=2000",alt:"京都錦市場街景",events:[
 ["09:00–13:10","高雄飛往關西機場","抵達 KIX，辦理入境、領取行李。"],
@@ -129,7 +134,13 @@ const $=id=>document.getElementById(id);
 const storageKey="kansai_journal_2026_v1";
 let saved={};
 try{saved=JSON.parse(localStorage.getItem(storageKey)||"{}")}catch(e){saved={}}
-function persist(){localStorage.setItem(storageKey,JSON.stringify(saved))}
+let saveTimer=null;
+function persist(){localStorage.setItem(storageKey,JSON.stringify(saved));if(isOwner&&cloudReady){clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{const {error}=await supabaseClient.from("trip_state").update({data:saved}).eq("id",true);$("cloudStatus").textContent=error?"⚠️ 雲端儲存失敗":"☁️ 已同步至雲端";if(error)$("loginMessage").textContent=error.message;},500)}}
+function setReadOnly(){ $("cloudStatus").textContent=isOwner?"☁️ 管理者已登入・可編輯":"☁️ 共享行程・唯讀瀏覽";$("cloudHint").textContent=isOwner?"修改會自動同步給同行者。":"只有管理者登入後能修改。";$("loginForm").style.display=isOwner?"none":"flex";$("logoutBtn").style.display=isOwner?"inline-block":"none";$("memo").readOnly=!isOwner;render();renderPacking();}
+async function loadCloud(){try{const {data,error}=await supabaseClient.from("trip_state").select("data").eq("id",true).single();if(error)throw error;if(data?.data&&Object.keys(data.data).length){saved=data.data;localStorage.setItem(storageKey,JSON.stringify(saved))}else if(isOwner){const {error:w}=await supabaseClient.from("trip_state").update({data:saved}).eq("id",true);if(w)throw w}cloudReady=true;setReadOnly()}catch(e){$("cloudStatus").textContent="⚠️ 雲端連線尚未完成";$("loginMessage").textContent=e.message||"連線失敗"}}
+async function initCloud(){const {data:{session}}=await supabaseClient.auth.getSession();isOwner=!!session;await loadCloud();supabaseClient.auth.onAuthStateChange((_event,s)=>{isOwner=!!s;cloudReady=false;Promise.resolve().then(()=>loadCloud())});supabaseClient.channel("trip-state-live").on("postgres_changes",{event:"UPDATE",schema:"public",table:"trip_state"},p=>{if(!isOwner&&p.new?.data){saved=p.new.data;localStorage.setItem(storageKey,JSON.stringify(saved));setReadOnly()}}).subscribe()}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginMessage").textContent="登入中…";const {error}=await supabaseClient.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});$("loginMessage").textContent=error?"登入失敗："+error.message:"登入成功。";if(!error)$("loginPassword").value=""});
+$("logoutBtn").onclick=async()=>{await supabaseClient.auth.signOut()};
 function dayEvents(i){return saved.days?.[i]||days[i].events.map((e,j)=>({time:e[0],title:e[1],note:e[2],id:i+"-"+j}))}
 function setDayEvents(i,arr){saved.days=saved.days||{};saved.days[i]=arr;persist()}
 function render(){
@@ -142,11 +153,12 @@ function render(){
  $("main").innerHTML=`<section class="panel">
  <div class="day-heading"><div><h2>${d.title}</h2><p>${d.date}（週${d.dow}）・${d.summary}</p></div><span class="tag">${d.tag}</span></div>
  <figure class="cover"><img src="${d.photo}" alt="${d.alt}" loading="lazy" onerror="this.style.display='none'"><figcaption>今日風景｜${d.alt}（照片需連線載入）</figcaption></figure>
- <div id="events">${ev.map((e,j)=>{let key=e.id||selected+"-"+j;return `<article class="event ${checks[key]?"done":""}"><div class="time">${escapeHtml(e.time)}</div><div><h3>${escapeHtml(e.title)}</h3><p>${escapeHtml(e.note)}</p><div class="actions"><button class="soft-btn" data-edit="${j}">編輯</button><button class="soft-btn" data-delete="${j}">刪除</button><a class="soft-btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title+" "+d.title+" Japan")}">地圖</a></div></div><input class="check" type="checkbox" aria-label="完成 ${escapeHtml(e.title)}" data-check="${key}" ${checks[key]?"checked":""}></article>`}).join("")}</div>
- <div class="actions"><button class="soft-btn primary" id="addEvent">＋ 新增行程</button><button class="soft-btn" id="resetDay">還原本日原始行程</button></div>
+ <div id="events">${ev.map((e,j)=>{let key=e.id||selected+"-"+j;return `<article class="event ${checks[key]?"done":""}"><div class="time">${escapeHtml(e.time)}</div><div><h3>${escapeHtml(e.title)}</h3><p>${escapeHtml(e.note)}</p><div class="actions">${isOwner?`<button class="soft-btn" data-edit="${j}">編輯</button><button class="soft-btn" data-delete="${j}">刪除</button>`:""}<a class="soft-btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title+" "+d.title+" Japan")}">地圖</a></div></div><input class="check" type="checkbox" aria-label="完成 ${escapeHtml(e.title)}" data-check="${key}" ${checks[key]?"checked":""} ${isOwner?"":"disabled"}></article>`}).join("")}</div>
+ <div class="actions">${isOwner?`<button class="soft-btn primary" id="addEvent">＋ 新增行程</button><button class="soft-btn" id="resetDay">還原本日原始行程</button>`:""}</div>
  <div class="note"><b>♡ 今日提醒</b>${d.date==="12/19"?"行李宅配與一日遊行李規定請先向飯店、旅行社確認。":d.date==="12/17"?"任天堂博物館需持指定日期與時段的預約票入場。":d.date==="12/23"?"木津市場休市；請預留前往機場與報到時間。":"交通與店家營業時間可能調整，出發前請再確認官方公告。"}</div>
  </section>`;
  document.querySelectorAll("[data-check]").forEach(c=>c.onchange=()=>{saved.checks=saved.checks||{};saved.checks[c.dataset.check]=c.checked;persist();render()});
+ if(!isOwner) return;
  document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(+b.dataset.edit));
  document.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{if(confirm("確定刪除這個行程？")){let a=dayEvents(selected);a.splice(+b.dataset.delete,1);setDayEvents(selected,a);render()}});
  $("addEvent").onclick=()=>openEditor(null);$("resetDay").onclick=()=>{if(confirm("還原本日原始行程？本日自訂內容將被覆蓋。")){saved.days?.[selected]&&delete saved.days[selected];persist();render()}};
@@ -156,9 +168,10 @@ function openEditor(index){editIndex=index;const e=index===null?{time:"",title:"
 $("cancelEdit").onclick=()=>$("modal").classList.remove("show");
 $("saveEdit").onclick=()=>{let a=dayEvents(selected),item={time:$("editTime").value.trim(),title:$("editTitle").value.trim(),note:$("editNote").value.trim(),id:editIndex===null?"custom-"+Date.now():a[editIndex].id||selected+"-"+editIndex};if(!item.title){alert("請填寫行程名稱");return}if(editIndex===null)a.push(item);else a[editIndex]=item;setDayEvents(selected,a);$("modal").classList.remove("show");render()};
 $("modal").addEventListener("click",e=>{if(e.target===$("modal"))$("modal").classList.remove("show")});
-function renderPacking(){const p=saved.packing||{};$("packing").innerHTML=packingItems.map((x,i)=>`<label class="packing"><input type="checkbox" data-pack="${i}" ${p[i]?"checked":""}>${x}</label>`).join("");document.querySelectorAll("[data-pack]").forEach(c=>c.onchange=()=>{saved.packing=saved.packing||{};saved.packing[c.dataset.pack]=c.checked;persist()})}
+function renderPacking(){const p=saved.packing||{};$("packing").innerHTML=packingItems.map((x,i)=>`<label class="packing"><input type="checkbox" data-pack="${i}" ${p[i]?"checked":""} ${isOwner?"":"disabled"}>${x}</label>`).join("");document.querySelectorAll("[data-pack]").forEach(c=>c.onchange=()=>{saved.packing=saved.packing||{};saved.packing[c.dataset.pack]=c.checked;persist()})}
 $("memo").value=saved.memo||"";$("memo").addEventListener("input",e=>{saved.memo=e.target.value;persist()});
 render();renderPacking();
+initCloud();
 </script>
 </body>
 </html>
